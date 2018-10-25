@@ -22,7 +22,7 @@ dependencies:
   - pip=10.0.1=py36_0
   - pycparser=2.19=py36_0
   - pyjwt=1.6.4=py36_0
-  - pyopenssl=17.4.0=py36ha82324b_0
+  - pyopenssl=17.5.0=py36ha82324b_0
   - pysocks=1.6.8=py36_0
   - python=3.6.6=hc167b69_0
   - readline=7.0=h1de35cc_5
