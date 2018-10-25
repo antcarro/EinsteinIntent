@@ -6,7 +6,7 @@ ca-certificates=2018.03.07=0
 certifi=2018.10.15=py36_0
 cffi=1.11.5=py36h6174b99_1
 chardet=3.0.4=py36_1
-cryptography=2.0.3=py36h22d4226_1
+cryptography>=2.3=py36h22d4226_1
 idna=2.7=py36_0
 jwt=0.5.2=py36ha3cd5df_0
 libcxx=4.0.1=h579ed51_0
