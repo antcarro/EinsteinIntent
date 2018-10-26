@@ -12,8 +12,34 @@ import json
 from random import randint
 
 class Dataset:
+    """The dataset class contains methods for creating and interacting with datasets.
+
+    This simple wrapper contains all information and methods necessary for uploading
+    and interacting with datasets in EPS. 
+    """
+    
     def __init__(self,einstein_session,datasetId=None):
-        self.session = einstein_session #a session object is passed to the dataset class
+        """Init method associates a session and, if provided a datasetId, queries the status.
+
+        Note:
+            If a datasetId is provided, the init method will make a call to the EPS API to query
+            the status of the dataset with that ID. Othwerise, the object is returned with no data.
+
+        Args:
+            einstein_session (EinsteinPlatformSession): An active EinsteinPlatformSession object
+                whose information will be used for each API call.
+            datasetId (:obj:`str`, optional): If provided, the a call will be made to query the
+                status of the dataset with the given ID in Einstein Intent during the initialization.
+
+        Attributes:
+            session (EinsteinPlatformSession): A name for the active session.
+            datasetId (str): The EPS ID for the dataset. If not provided, it will be set when
+                the dataset is created in EPS.
+            dataset_metadata (dict): Initialized as an empty dictionary, once a dataset is created
+                on EPS, this will hold the metadata from a successful update status call to the dataset.
+            labels (list): List of class labels. Automatically populated when the dataset is created.
+        """
+        self.session = einstein_session 
         self.datasetId = datasetId
         self.dataset_metadata = None
         self.labels=[]
@@ -22,26 +48,45 @@ class Dataset:
             _,_ = self.update_dataset_status()
     
     def __repr__(self):
-        return '<Dataset %s, %s, %s>'%(
-                self.datasetId,self.__class__.__name__,self.__sizeof__())
+        return '<Dataset %s, %s>'%(
+                self.datasetId,self.__class__.__name__)
         
     def header_helper(self,multipart_data):
         return {'Authorization': 'Bearer ' + self.session.token,
                 'Content-Type': multipart_data.content_type}
 
     def reset_token(self,session_time=3600):
+        """Class method to resest an Authorization Token for access to Einstein Platform Services.
+
+        Args:
+            session_time (int, optional): Valid duration of the access token, in seconds.
+        """
         self.session.reset_authorization_token(session_time)
 
     def create_dataset(self,filepath=None,urlpath=None):
+        """Class method for creating a dataset in EPS.
+
+        The create_dataset method, when provided with a means of accessing a data file, will
+        call the datasets upload endpoint in the EPS API. If successful, the datasetId and
+        dataset_metadata attributes will be populated.
+
+        Note: 
+            At least one of the two optional arguments must be provided. An assertion failure
+            will result if the datasetId has already been provided (in this case, make a new object).
+
+        Args:
+            filepath (str, optional): Filepath to a comma-separated-values file to upload as dataset.
+            urlpath (str, optional): url pointing to a comma-separated-values file to upload as dataset.
+        """
         assert not self.datasetId, """This dataset has already been populated.
 To create a new dataset, make a new Dataset object"""
         assert (filepath or urlpath), "User must provide filepath or urlpath"
-        if filepath:#this doesn't work yet
+        if filepath:
             print('Warning: this has issues on Mac OS')
             multipart_data = MultipartEncoder(
                     fields={
-                            'data': '@'+filepath,
-                            'type': 'text-intent'})
+                        'data': '@'+filepath,
+                        'type': 'text-intent'})
         elif urlpath:
             multipart_data = MultipartEncoder(
                     fields={
@@ -60,6 +105,12 @@ To create a new dataset, make a new Dataset object"""
             
 
     def delete_self(self):
+        """Class method for deleting the dataset from EPS.
+
+        Note:
+            EPS dataset is not immediately deleted. As a result, the object stays alive
+            so that the user can query the deletion status.            
+        """
         headers = {'Authorization': 'Bearer ' + self.session.token}
         status_update = requests.delete(LANG_BASE_URL+'/datasets/'+self.datasetId,
                                      headers=headers
@@ -74,6 +125,9 @@ To create a new dataset, make a new Dataset object"""
         return json.loads(status_update.text), status_update.status_code
         
     def update_dataset_status(self):
+        """Class method to query the upload status of the dataset and retrieve metadata.
+
+        """
         assert self.datasetId, "No dataset found."
         multipart_data = MultipartEncoder(
                                 fields={'type': 'text-intent'})
@@ -122,6 +176,9 @@ To create a new dataset, make a new Dataset object"""
 class Model:
 
     def __init__(self,dataset=None,session=None,datasetId=None,modelId=None,model_name=None):
+        """Model objects are containers for the API calls used with models.
+
+        """
         #model can be initialized with various start data
         #ideally the user would pass a dataset object (this is the object oriented method)
         #a dataset object contains the session information and datasetId

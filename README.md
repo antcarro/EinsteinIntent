@@ -12,3 +12,5 @@ The dataset file contains definitions of two classes: Dataset and Model. A Datas
 
 ## main.py
 This is a UI app developed with tkinter to facilitate interacting with these classes. 
+
+## Usage

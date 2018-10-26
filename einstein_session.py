@@ -14,6 +14,7 @@ import einstein_constants
 import json
 import os
 
+
 class EinsteinPlatformSession:
 
     def __init__(self,email=None,private_key=None,cert_path=None,token=None,session_duration=3600):
@@ -31,7 +32,13 @@ class EinsteinPlatformSession:
             token (str, optional): Access token of currently-active session
             session_duration (int, default = 3600): Amount of time (in minutes) to keep access token active
         Attributes:
-            session_metadata: JSON data returned from the call to "start session"
+            API_PATH (str): base path for the API calls
+            AUTH_PATH (str): path for authorization
+            email (str): Email address of user (used to start a session with a certificate)
+            private_key (str): Private key, derived from einstein_platform.pem certificate
+            cert_path (str): File path for einstein_platform.pem certificate.
+            expiration_time (int): Requested duration 
+            session_metadata (dict): JSON data returned from the call to "start session"
         """
         self.API_PATH = einstein_constants.EINSTEIN_BASE_URL
         self.AUTH_PATH = einstein_constants.EINSTEIN_API_OAUTH
@@ -107,14 +114,3 @@ class EinsteinPlatformSession:
         else:
             print('Error: status code %s' %response.status_code)
         return json.loads(response.text), response.status_code
-    def basic_reset_auth(self):
-        payload = {
-                'aud': self.AUTH_PATH,
-                'exp': time.time()+10,
-                'sub': self.email}
-        header = {'Content-type': 'application/x-www-form-urlencoded'}
-        assertion = jwt.encode(payload, self.private_key, algorithm='RS256')
-        assertion = assertion.decode('utf-8')
-        response = requests.post(url=self.AUTH_PATH,
-                                 headers=header,
-                                 data='grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion='+assertion)
