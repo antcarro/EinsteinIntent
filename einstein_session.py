@@ -14,7 +14,6 @@ import einstein_constants
 import json
 import os
 
-
 class EinsteinPlatformSession:
 
     def __init__(self,email=None,private_key=None,cert_path=None,token=None,session_duration=3600):

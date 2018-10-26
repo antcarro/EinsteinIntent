@@ -44,7 +44,7 @@ class EPAWindow(tk.Tk):
                 make_session_frame(session_page)
         
         
-        self.token_field, self.start_session_with_token_button = \ 
+        self.token_field, self.start_session_with_token_button = \
                 makebuttonrow(session_page,
                             'Token',
                             'Start session with token')
@@ -119,13 +119,13 @@ class EPAWindow(tk.Tk):
                     self.dataset_file_field.get())
                     )
 
-        self.dataset_status_button, self.dataset_status_label = \ 
+        self.dataset_status_button, self.dataset_status_label = \
                 makebuttonlabelrow(dataset_page, 'Check Dataset Status')
         
         self.dataset_status_button.configure(
                 command=self.update_dataset)
         
-        self.dataset_delete_button, self.dataset_delete_label =\ 
+        self.dataset_delete_button, self.dataset_delete_label = \
                 makebuttonlabelrow(dataset_page, 'Delete Dataset')
         
         self.dataset_delete_button.configure(
@@ -140,7 +140,7 @@ class EPAWindow(tk.Tk):
         self.dataset_feedback = tk.Text(dataset_page,height=10,width=30)
         self.dataset_feedback.pack(side='top',fill='x',padx=10,pady=10)
         
-        self.get_dataset_models_button, self.get_all_models_label = \ 
+        self.get_dataset_models_button, self.get_all_models_label = \
                 makebuttonlabelrow(dataset_page, 'Get All Associated Models')
         self.get_dataset_models_button.configure(
                 command=self.get_associated_models)
@@ -155,7 +155,7 @@ class EPAWindow(tk.Tk):
         
         self.model_page = ttk.Frame(self.nb)
 
-        self.model_id_field, self.model_from_id_button = \ 
+        self.model_id_field, self.model_from_id_button = \
                 makebuttonrow(self.model_page,
                             'Model ID',
                             'Link model with ID')     
@@ -172,7 +172,7 @@ class EPAWindow(tk.Tk):
                                          padx=20,
                                          pady=20)
         
-        self.model_status_button, self.model_status_label = \ 
+        self.model_status_button, self.model_status_label = \
                 makebuttonlabelrow(self.model_page,
                                 'Check Model Status')
         
@@ -232,7 +232,7 @@ class EPAWindow(tk.Tk):
                                 padx=10,
                                 pady=10)
         
-        self.feedback_file_field, self.feedback_file_button  = \ 
+        self.feedback_file_field, self.feedback_file_button = \
                 makebuttonrow(self.model_page,
                             'Feedback File',
                             'Submit feedback from file')
@@ -322,34 +322,35 @@ class EPAWindow(tk.Tk):
             if self.model.model_isReady:
                 self.model_status_label.configure(text='The model is ready.',
                                                   background='green2')
-                for button in [self.query_button,
-                               self.feedback_button,
-                               self.feedback_file_button,
-                               self.retrain_model_button,
-                               self.get_model_lc_button,
-                               self.get_model_metrics_button]:
-                    button.configure(state='normal')
+                # for button in [self.query_button,
+                #                self.feedback_button,
+                #                self.feedback_file_button,
+                #                self.retrain_model_button,
+                #                self.get_model_lc_button,
+                #                self.get_model_metrics_button]:
+                #     button.configure(state='normal')
 
             else:
                 self.model_status_label.configure(text='The model is not ready.',
                                                   background='coral')
-                for button in [self.query_button,
-                               self.feedback_button,
-                               self.feedback_file_button,
-                               self.retrain_model_button,
-                               self.get_model_lc_button,
-                               self.get_model_metrics_button]:
-                    button.configure(state='disabled')
+                # for button in [self.query_button,
+                #                self.feedback_button,
+                #                self.feedback_file_button,
+                #                self.retrain_model_button,
+                #                self.get_model_lc_button,
+                #                self.get_model_metrics_button]:
+                #     button.configure(state='disabled')
         except:
             self.model_status_label.configure(text='The model could not be found', 
                                               background='blue')
-            for button in [self.query_button,
-                           self.feedback_button,
-                           self.feedback_file_button,
-                           self.retrain_model_button,
-                           self.get_model_lc_button,
-                           self.get_model_metrics_button]:
-                button.configure(state='disabled')
+            # for button in [self.query_button,
+            #                self.feedback_button,
+            #                self.feedback_file_button,
+            #                self.retrain_model_button,
+            #                #self.get_model_lc_button,
+            #                #self.get_model_metrics_button
+            #                ]:
+            #     button.configure(state='disabled')
                 
             messagebox.showinfo(title="Model Information", 
                                 message="Is there a model yet?")
