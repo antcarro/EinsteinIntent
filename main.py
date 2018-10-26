@@ -308,13 +308,12 @@ class EPAWindow(tk.Tk):
         self.check_model_status()
         messagebox.showinfo(title="Update Model Information", message=msg)
     
-    
 
         
-    def get_model_lc(self):
-        msg, status = self.model.get_learning_curve()
-        self.session.write_record('model_%s_lc'%(self.model.modelId),msg)
-        self.get_model_lc_label.configure(text='Updated at %s'%ctime())
+    # def get_model_lc(self):
+    #     msg, status = self.model.get_learning_curve()
+    #     self.session.write_record('model_%s_lc'%(self.model.modelId),msg)
+    #     self.get_model_lc_label.configure(text='Updated at %s'%ctime())
 
         
     def check_model_status(self):
