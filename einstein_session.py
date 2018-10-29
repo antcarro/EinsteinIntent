@@ -48,12 +48,6 @@ class EinsteinPlatformSession:
         self.expiration_time = None
         self.session_metadata = None
         timestamp=time.ctime().split(' ')
-        data_folder_name='Session_%s%s_%s'%(timestamp[1],
-                                            timestamp[2],
-                                            '-'.join(timestamp[3].split(':')))
-        os.mkdir(data_folder_name)
-        self.data_dir = os.path.join(os.getcwd(),data_folder_name)
-
 
         if cert_path:
             self.provide_certificate()
@@ -69,14 +63,9 @@ class EinsteinPlatformSession:
             json.dump(data,f)
 
     def monitor_usage(self):
-
         headers = {'Authorization': 'Bearer ' + self.token}
-        
         response = requests.get(url=self.API_PATH+'/apiusage',
-                                 headers=headers)
-                                 
-        self.write_record('usage',json.loads(response.text))
-        
+                                 headers=headers)        
         return json.loads(response.text), response.status_code
                 
     def time_remaining(self):
@@ -92,10 +81,6 @@ class EinsteinPlatformSession:
 
         dataset_dict = json.loads(response.text)
 
-        try:
-            self.associated_datasets = set(dataset_dict['data'])
-        except:
-            pass
         return dataset_dict, response.status_code
     
     def reset_authorization_token(self,session_duration=None):
