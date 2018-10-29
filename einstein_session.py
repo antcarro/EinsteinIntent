@@ -53,7 +53,8 @@ class EinsteinPlatformSession:
                                             '-'.join(timestamp[3].split(':')))
         os.mkdir(data_folder_name)
         self.data_dir = os.path.join(os.getcwd(),data_folder_name)
-        
+
+
         if cert_path:
             self.provide_certificate()
             
@@ -88,7 +89,14 @@ class EinsteinPlatformSession:
     def get_datasets(self):
         response = requests.get(einstein_constants.LANG_BASE_URL+'/datasets',
                      headers={'Authorization': 'Bearer ' + self.token})
-        return json.loads(response.text), response.status_code
+
+        dataset_dict = json.loads(response.text)
+
+        try:
+            self.associated_datasets = set(dataset_dict['data'])
+        except:
+            pass
+        return dataset_dict, response.status_code
     
     def reset_authorization_token(self,session_duration=None):
         if not session_duration:
