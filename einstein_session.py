@@ -47,7 +47,6 @@ class EinsteinPlatformSession:
         self.session_duration = session_duration
         self.expiration_time = None
         self.session_metadata = None
-        timestamp=time.ctime().split(' ')
 
         if cert_path:
             self.provide_certificate()
@@ -57,10 +56,6 @@ class EinsteinPlatformSession:
         else:
             assert(self.private_key), "PrivateKey Error: There was an error in retrieving the key"
             self.reset_authorization_token()
-        
-    def write_record(self,name,data):
-        with open(os.path.join(self.data_dir,name+'_'+str(int(time.time()))),'w') as f:
-            json.dump(data,f)
 
     def monitor_usage(self):
         headers = {'Authorization': 'Bearer ' + self.token}
