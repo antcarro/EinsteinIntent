@@ -22,7 +22,7 @@ pyopenssl=17.5.0=py36ha82324b_0
 pysocks=1.6.8=py36_0
 python=3.6.6=hc167b69_0
 readline=7.0=h1de35cc_5
-requests>=2.19.1=py36_0
+requests>=2.20=py36_0
 requests-toolbelt=0.8.0=py_1
 setuptools=40.4.3=py36_0
 six=1.11.0=py36_1
