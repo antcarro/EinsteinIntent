@@ -43,6 +43,7 @@ class Dataset:
         self.datasetId = datasetId
         self.dataset_metadata = None
         self.labels=[]
+        self.associated_models=[]
 
         if datasetId:
             _,_ = self.update_dataset_status()
@@ -78,6 +79,7 @@ class Dataset:
             filepath (str, optional): Filepath to a comma-separated-values file to upload as dataset.
             urlpath (str, optional): url pointing to a comma-separated-values file to upload as dataset.
         """
+        
         assert not self.datasetId, """This dataset has already been populated.
 To create a new dataset, make a new Dataset object"""
         assert (filepath or urlpath), "User must provide filepath or urlpath"
@@ -178,14 +180,29 @@ class Model:
     def __init__(self,dataset=None,session=None,datasetId=None,modelId=None,model_name=None):
         """Model objects are containers for the API calls used with models.
 
+        The model object can be initialized with various start data. It must be linked to
+        a dataset object (or a datasetId) so that it can query the readiness of said dataset
+        for use in training the model, and for placing feedback data. 
+
+        Note: 
+
+        Args: 
+            dataset (Dataset obj, optional): Dataset object for train dataset.
+            session (Session obj, optional): Session object for calls to the API. If unprovided,
+                can be derived from Dataset object (if provided).
+            datasetId (str, optional): Dataset ID of training dataset, which is linked if the 
+                dataset object is not provided.
+            modelId (str, optional): Model ID if there is already an existing model in EPS.
+            model_name (str, optional): Optional name for the model, will be randomly generated
+                if left empty.
+        
+        Attributes:
+            model_metadata (dict): Dictionary of model information scraped from API call,
+                populated once a call 
         """
-        #model can be initialized with various start data
-        #ideally the user would pass a dataset object (this is the object oriented method)
-        #a dataset object contains the session information and datasetId
-        #with only session and datasetId, we can make a dataset object
-        #with a session and modelId, we can get a datasetId and create a dataset
+
         self.model_metadata = None
-        self.modelId=modelId
+        self.modelId = modelId
 
         if dataset:
             self.dataset = dataset
@@ -202,7 +219,7 @@ class Model:
         if modelId:
             self.model_metadata, status_code = self.update_model_status()
             if status_code != 200:
-                print("Irregular status code %s. There may be no metadata.")
+                print("Irregular status code %s. There may be no metadata." % status_code)
             
     def header_helper(self,multipart_data):
         return {'Authorization': 'Bearer ' + self.session.token,
@@ -219,7 +236,7 @@ class Model:
         
         self.model_metadata = json.loads(status.text)
         
-        return json.loads(status.text), status.status_code        
+        return self.model_metadata, status.status_code        
 
     @property
     def modelId(self):
@@ -254,8 +271,6 @@ class Model:
             return False
         except AttributeError:
             return False
-    
-            
         
     def train_model(self,model_name=None):
         if not model_name:
@@ -276,7 +291,7 @@ class Model:
             self.modelId = self.model_metadata['modelId']
         except:
             print('Status code %s when attempting to set modelId from model_metadata' %post_res.status_code)
-        return json.loads(post_res.text), post_res.status_code
+        return self.model_metadata, post_res.status_code
 
 
     def submit_feedback(self,document,expectedLabel,verbose=False):
@@ -296,7 +311,8 @@ class Model:
                       %(feedback_dict['id'],feedback_dict['label']['datasetId'],
                         feedback_dict['label']['name']))
             else:
-                print("""Error: there was a problem in submit_feedback method with code %s""" %post_status.status_code)
+                print("Error: there was a problem in submit_feedback "+
+                        "method with code %s"%post_status.status_code)
                 
         return json.loads(post_status.text), post_status.status_code
 

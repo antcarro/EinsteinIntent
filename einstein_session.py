@@ -47,13 +47,7 @@ class EinsteinPlatformSession:
         self.session_duration = session_duration
         self.expiration_time = None
         self.session_metadata = None
-        timestamp=time.ctime().split(' ')
-        data_folder_name='Session_%s%s_%s'%(timestamp[1],
-                                            timestamp[2],
-                                            '-'.join(timestamp[3].split(':')))
-        os.mkdir(data_folder_name)
-        self.data_dir = os.path.join(os.getcwd(),data_folder_name)
-        
+
         if cert_path:
             self.provide_certificate()
             
@@ -62,20 +56,11 @@ class EinsteinPlatformSession:
         else:
             assert(self.private_key), "PrivateKey Error: There was an error in retrieving the key"
             self.reset_authorization_token()
-        
-    def write_record(self,name,data):
-        with open(os.path.join(self.data_dir,name+'_'+str(int(time.time()))),'w') as f:
-            json.dump(data,f)
 
     def monitor_usage(self):
-
         headers = {'Authorization': 'Bearer ' + self.token}
-        
         response = requests.get(url=self.API_PATH+'/apiusage',
-                                 headers=headers)
-                                 
-        self.write_record('usage',json.loads(response.text))
-        
+                                 headers=headers)        
         return json.loads(response.text), response.status_code
                 
     def time_remaining(self):
@@ -88,7 +73,10 @@ class EinsteinPlatformSession:
     def get_datasets(self):
         response = requests.get(einstein_constants.LANG_BASE_URL+'/datasets',
                      headers={'Authorization': 'Bearer ' + self.token})
-        return json.loads(response.text), response.status_code
+
+        dataset_dict = json.loads(response.text)
+
+        return dataset_dict, response.status_code
     
     def reset_authorization_token(self,session_duration=None):
         if not session_duration:
